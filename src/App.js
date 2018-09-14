@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import InputBar from "./components/inputbar";
-import MyMapComponent from "./components/map";
+import MyMap from "./components/map";
 
 class App extends Component {
   render() {
