@@ -5,6 +5,7 @@ import PlacesAutocomplete, {
   getLatLng
 } from "react-places-autocomplete";
 import AutoComplete from "./autocomplete";
+import MyMap from "./map";
 
 class InputBar extends Component {
   state = {
@@ -30,7 +31,7 @@ class InputBar extends Component {
     console.log("Selected location:" + location);
     geocodeByAddress(location)
       .then(results => getLatLng(results[0]))
-      .then(latLng => console.log("Success", latLng))
+      .then(latLng => this.props.onInputChange(latLng))
       .catch(error => console.error("Error", error));
   };
 
