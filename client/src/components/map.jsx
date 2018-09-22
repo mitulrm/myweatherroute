@@ -22,13 +22,28 @@ const MyMap = compose(
     defaultZoom={8}
     defaultCenter={{ lat: -34.397, lng: 150.644 }}
   >
-    {props.isMarkerShown && (
-      <Marker
-        position={{ lat: -34.397, lng: 150.644 }}
-        onClick={props.onMarkerClick}
-      />
-    )}
+    {props.markers.map(marker => {
+      return <Marker position={{ lat: marker.lat, lng: marker.lng }} />;
+    })}
   </GoogleMap>
 ));
 
 export default MyMap;
+
+/*
+(
+  <Marker
+    position={{ lat: -34.397, lng: 150.644 }}
+    onClick={props.onMarkerClick}
+  />
+  )}*/
+
+/*
+  {props.markers.map((marker, i) => {
+    return (
+      <Marker lat={marker.lat} lng={marker.lng}>
+        position=
+        {{ lat: marker.lat, lng: marker.lng }}
+      </Marker>
+    );
+  })}*/
