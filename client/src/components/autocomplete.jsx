@@ -6,8 +6,6 @@ import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 
 class AutoComplete extends Component {
-  state = {};
-
   onChange = location => {
     this.props.onChange(this.props.type, location);
   };

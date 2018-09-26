@@ -1,20 +1,21 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  withScriptjs,
+  /*  withScriptjs,*/
   withGoogleMap,
   GoogleMap,
-  Marker
+  Marker,
+  DirectionsRenderer
 } from "react-google-maps";
 import { compose, withProps } from "recompose";
 
 const MyMap = compose(
   withProps({
-    googleMapURL: "asd",
+    googleMapURL: "",
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `530px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
-  withScriptjs,
+  //  withScriptjs,
   withGoogleMap
 )(({ forwardedRef, ...props }) => (
   <GoogleMap
@@ -25,6 +26,7 @@ const MyMap = compose(
     {props.markers.map(marker => {
       return <Marker position={{ lat: marker.lat, lng: marker.lng }} />;
     })}
+    <DirectionsRenderer directions={props.directions} />
   </GoogleMap>
 ));
 
