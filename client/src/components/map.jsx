@@ -4,10 +4,11 @@ import {
   withGoogleMap,
   GoogleMap,
   Marker,
-  DirectionsRenderer
+  DirectionsRenderer,
+  InfoWindow
 } from "react-google-maps";
-import { compose, withProps } from "recompose";
-
+import { compose, withProps, withStateHandlers } from "recompose";
+import MarkerWithInfo from "./marker";
 const MyMap = compose(
   withProps({
     googleMapURL: "",
@@ -17,16 +18,50 @@ const MyMap = compose(
   }),
   //  withScriptjs,
   withGoogleMap
+  /*withStateHandlers(
+    () => ({
+      isWindowOpen: false,
+      weather: ""
+    }),
+    {
+      onToggleOpen: ({ isOpen }) => () => ({
+        isOpen: !isOpen
+      }),
+      onMouseOver: ({ isOpen }) => updateWeather => ({
+        weather: updateWeather,
+        isOpen: !isOpen
+      })
+    }
+  )*/
 )(({ forwardedRef, ...props }) => (
   <GoogleMap
     ref={forwardedRef}
     defaultZoom={8}
     defaultCenter={{ lat: -34.397, lng: 150.644 }}
   >
+    {<DirectionsRenderer directions={props.directions} />}
     {props.markers.map(marker => {
-      return <Marker position={{ lat: marker.lat, lng: marker.lng }} />;
+      return (
+        /*   <Marker
+          key={marker.position.lat}
+          position={marker.position}
+          weather={marker.weather}
+          onMouseOver={weather => props.onMouseOver(weather)}
+          onMouseOut={props.onToggleOpen}
+        >
+          {props.isOpen && (
+            <InfoWindow onCloseClick={props.onToggleOpen}>
+              <div>Info Window</div>
+            </InfoWindow>
+          )}
+        </Marker>*/
+        <MarkerWithInfo
+          key={marker.position.lat}
+          position={marker.position}
+          weather={marker.weather}
+        />
+      );
     })}
-    <DirectionsRenderer directions={props.directions} />
   </GoogleMap>
 ));
 

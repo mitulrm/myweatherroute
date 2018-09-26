@@ -69,6 +69,22 @@ class App extends Component {
     this.map.current.panTo(latLng);
   };
 
+  setMarkers = directions => {
+    this.setState({ markers: [] });
+    directions.routes[0].legs[0].steps.forEach(step => {
+      const marker = {
+        position: {
+          lat: step.start_location.lat(),
+          lng: step.start_location.lng()
+        },
+        weather: step.html_instructions
+      };
+      this.setState(prevState => ({
+        markers: [...prevState.markers, marker]
+      }));
+    });
+  };
+
   onSubmit = (fromLatLng, toLatLng) => {
     /*this.setState(prevState => ({
       markers: [fromLatLng, toLatLng]
@@ -128,6 +144,7 @@ class App extends Component {
             }
           }
         });
+        this.setMarkers(response.json);
       });
   };
 
