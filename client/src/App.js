@@ -3,14 +3,14 @@ import React, { Component } from "react";
 import "./App.css";
 import InputBar from "./components/inputbar";
 import MyMap from "./components/map";
-import {
+/*import {
   withGoogleMap,
   GoogleMap,
   Marker,
   DirectionsService,
   DirectionsRenderer
 } from "react-google-maps";
-
+*/
 const MapWithRef = React.forwardRef(({ ...props }, ref) => {
   return <MyMap {...props} forwardedRef={ref} />;
 });
@@ -20,7 +20,8 @@ class App extends Component {
     MyMap: null,
     map: 1,
     markers: [],
-    directions: {}
+    directions: {},
+    isDirection: false
   };
   constructor(props) {
     super(props);
@@ -77,8 +78,10 @@ class App extends Component {
           lat: step.start_location.lat(),
           lng: step.start_location.lng()
         },
-        weather: step.html_instructions
+        address: step.start_address,
+        weather: ""
       };
+      console.log(step.start_address);
       this.setState(prevState => ({
         markers: [...prevState.markers, marker]
       }));
@@ -144,7 +147,9 @@ class App extends Component {
             }
           }
         });
+        this.setState({ isDirection: true });
         this.setMarkers(response.json);
+        console.log(response.json.geocoded_waypoints);
       });
   };
 
@@ -161,6 +166,7 @@ class App extends Component {
             markers={this.state.markers}
             isMarkerShown={this.isMarkerShown}
             directions={this.state.directions}
+            isDirection={this.state.isDirection}
           />
         </div>
       </React.Fragment>

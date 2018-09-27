@@ -3,11 +3,9 @@ import {
   /*  withScriptjs,*/
   withGoogleMap,
   GoogleMap,
-  Marker,
-  DirectionsRenderer,
-  InfoWindow
+  DirectionsRenderer
 } from "react-google-maps";
-import { compose, withProps, withStateHandlers } from "recompose";
+import { compose, withProps } from "recompose";
 import MarkerWithInfo from "./marker";
 const MyMap = compose(
   withProps({
@@ -39,7 +37,7 @@ const MyMap = compose(
     defaultZoom={8}
     defaultCenter={{ lat: -34.397, lng: 150.644 }}
   >
-    {<DirectionsRenderer directions={props.directions} />}
+    {props.isDirection && <DirectionsRenderer directions={props.directions} />}
     {props.markers.map(marker => {
       return (
         /*   <Marker
@@ -59,6 +57,7 @@ const MyMap = compose(
           key={marker.position.lat}
           position={marker.position}
           weather={marker.weather}
+          address={marker.address}
         />
       );
     })}

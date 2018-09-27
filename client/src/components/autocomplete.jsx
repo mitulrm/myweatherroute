@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.css";
-import PlacesAutocomplete, {
+import PlacesAutocomplete from "react-places-autocomplete";
+/*, {
   geocodeByAddress,
   getLatLng
-} from "react-places-autocomplete";
+} */
 
 class AutoComplete extends Component {
   onChange = location => {
