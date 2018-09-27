@@ -40,46 +40,51 @@ function getWeather(Lat, Lng) {
 }
 */
 function directions(fromLatLng, toLatLng) {
-  googleMapsClient
-    .directions({
-      origin: fromLatLng,
-      destination: toLatLng
-    })
-    .asPromise()
-    .then(response => {
-      let steps = [];
-      response.json.routes[0].legs[0].steps.map(step => {
-        //console.log(step.start_location.lat + " " + step.start_location.lng);
-        var weather = getWeather(
-          step.start_location.lat,
-          step.start_location.lng
-        ).then(res => {
-          return res;
+  return (
+    googleMapsClient
+      .directions({
+        origin: fromLatLng,
+        destination: toLatLng
+      })
+      .asPromise()
+      .then(response => {
+        var steps = [];
+        response.json.routes[0].legs[0].steps.forEach(step => {
+          //console.log(step.start_location.lat + " " + step.start_location.lng);
+          promise = new Promise((resolve, reject) => {
+            getWeather(step.start_location.lat, step.start_location.lng)
+              .then(res => {
+                step["weather"] = res;
+                resolve(step);
+              })
+              .catch(error => reject(error));
+          });
+          steps.push(promise);
         });
-        weather
-          .then(res => {
-            step["weather"] = res;
-            return step;
+
+        return Promise.all(steps)
+          .then(steps => {
+            response.json.routes[0].legs[0].steps = steps;
+            //console.log(response.json.routes[0].legs[0].steps);
+            //console.log(steps);
+            return response;
           })
-          .then(step => steps.push({ step }));
-        //.then(console.log(step));
-      });
-      Promise.all(steps).then(function() {
-        response.json.routes[0].legs[0].steps = steps;
-        console.log(response.json.routes[0].legs[0].steps);
-        return response;
-      });
-    })
-    //.then(response => console.log(response.json.routes[0].legs[0].steps))
-    .catch(err => {
-      console.log(err);
-    });
+          .catch(err => {
+            console.log(err);
+          });
+      })
+      //.then(response => console.log(response.json.routes[0].legs[0].steps))
+      .catch(err => {
+        console.log(err);
+      })
+  );
 }
-/*Directions(
+/*
+directions(
   { lat: 42.88644679999999, lng: -78.8783689 },
   { lat: 40.7127753, lng: -74.0059728 }
-); //.then(dir => console.log(dir.json.routes[0].legs[0].steps));
-
+).then(dir => console.log(dir.json.routes[0].legs[0].steps));
+*/
 //console.log(resp.routes.legs.steps.end_location);
 /*
 googleMapsClient

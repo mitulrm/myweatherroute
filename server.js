@@ -54,13 +54,8 @@ app.get("/", (request, response) => {
 app.get("/directions/", (request, response) => {
   const fromLatLng = { lat: request.query.fromLat, lng: request.query.fromLng };
   const toLatLng = { lat: request.query.toLat, lng: request.query.toLng };
-  //  dir = maps.directions(fromLatLng, toLatLng);
-  googleMapsClient
-    .directions({
-      origin: fromLatLng,
-      destination: toLatLng
-    })
-    .asPromise()
+  maps
+    .directions(fromLatLng, toLatLng)
     .then(directions => response.send(directions))
     .catch(err => {
       console.log(err);

@@ -78,10 +78,10 @@ class App extends Component {
           lat: step.start_location.lat(),
           lng: step.start_location.lng()
         },
-        address: step.start_address,
-        weather: ""
+        //address: step.start_address,
+        weather: step.weather.main.temp
       };
-      console.log(step.start_address);
+
       this.setState(prevState => ({
         markers: [...prevState.markers, marker]
       }));
