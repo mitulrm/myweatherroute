@@ -26,7 +26,10 @@ class MarkerWithInfo extends Component {
       >
         {this.state.isOpen && (
           <InfoWindow onCloseClick={this.onToggleOpen}>
-            <div>Temp : {this.props.weather} C</div>
+            <div>
+              {this.props.weather.desc} <br />
+              Temp : {this.props.weather.temp} C
+            </div>
           </InfoWindow>
         )}
       </Marker>

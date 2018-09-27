@@ -72,6 +72,7 @@ class App extends Component {
 
   setMarkers = directions => {
     this.setState({ markers: [] });
+    let distance = 0;
     directions.routes[0].legs[0].steps.forEach(step => {
       const marker = {
         position: {
@@ -79,12 +80,18 @@ class App extends Component {
           lng: step.start_location.lng()
         },
         //address: step.start_address,
-        weather: step.weather.main.temp
+        weather: {
+          temp: step.weather.main.temp,
+          desc: step.weather.weather[0].description
+        }
       };
-
-      this.setState(prevState => ({
-        markers: [...prevState.markers, marker]
-      }));
+      distance = distance + step.distance.value;
+      if (distance > 20000) {
+        this.setState(prevState => ({
+          markers: [...prevState.markers, marker]
+        }));
+        distance = 0;
+      }
     });
   };
 
