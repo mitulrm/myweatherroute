@@ -1,7 +1,10 @@
+/*Script to manage Database operations*/
+
 const sqlite3 = require("sqlite3").verbose();
 require("dotenv").config();
 const maps = require("./maps");
 
+/*Establish connection with Database, also create directions_weather table if it doesn't exist*/
 getConnection = () => {
   let db = new sqlite3.Database("./db/weathermap.db", err => {
     if (err) {
@@ -23,6 +26,7 @@ getConnection = () => {
   return db;
 };
 
+/*Insert data to table with current timestamp. */
 insert = (fromLatLng, toLatLng, directions) => {
   let sql = `INSERT INTO directions_weather(
               FromLat, 
@@ -39,7 +43,7 @@ insert = (fromLatLng, toLatLng, directions) => {
               ?,
               strftime("%Y-%m-%d %H:%M:%S", "now")
               )`;
-  //console.log(sql);
+
   let params = [
     fromLatLng.lat,
     fromLatLng.lng,
@@ -51,13 +55,13 @@ insert = (fromLatLng, toLatLng, directions) => {
 
   db.run(sql, params, err => {
     if (err) {
-      console.log(`Error: ${err}`);
+      console.error(`Error: ${err}`);
     }
-    console.log(`Rows inserted ${this.changes}`);
   });
   db.close();
 };
 
+/*Fetch data for a given from and to request, and return latest record. */
 select = (fromLatLng, toLatLng) => {
   let sql = `Select 
               Directions, 
@@ -68,7 +72,7 @@ select = (fromLatLng, toLatLng) => {
               AND ToLat = ?
               AND ToLng = ?
             ORDER BY Timestamp DESC`;
-  //console.log(sql);
+
   let params = [fromLatLng.lat, fromLatLng.lng, toLatLng.lat, toLatLng.lng];
   let db = getConnection();
   return new Promise((resolve, reject) => {
@@ -77,20 +81,22 @@ select = (fromLatLng, toLatLng) => {
         console.error(err);
         reject(err);
       } else {
-        //console.log(row.Timestamp);
         db.close();
         resolve(row);
       }
     });
   });
 };
+
+/*Find how much hours old given record is */
 getTimeDiff = row => {
   let dataTime = new Date(row.Timestamp);
-  //let timeDiff = (Date.now() - pastTime) / 3600000;
-  //console.log(`${pastTime} ${Date.now()} ${timeDiff} `);
   return (Date.now() - dataTime) / 3600000;
 };
 
+/*Return direction and weather data for a given from and to locations.
+First it checks if data exists in table. If record is found, if it is older than specified amount of hours, it fetches new data from API, inserts new record in table and return the lates data.
+Else return the data retrieved from table. Time window for refreshing data can be specified in DATA_REFRESH_MARGIN variable in env file */
 function getDirections(fromLatLng, toLatLng) {
   return select(fromLatLng, toLatLng)
     .then(result => {
@@ -98,61 +104,18 @@ function getDirections(fromLatLng, toLatLng) {
         console.log("Directions fetched from DB");
         return JSON.parse(result.Directions);
       } else {
-        return (
-          maps
-            .directions(fromLatLng, toLatLng)
-            //.then(directions => directions.json())
-            .then(directions => {
-              insert(
-                fromLatLng,
-                toLatLng,
-                JSON.stringify(directions).toString()
-              );
-              console.log("Directions fetched from Google Maps API");
-              return directions;
-            })
-            .catch(err => {
-              console.log(err);
-            })
-        );
+        return maps
+          .directions(fromLatLng, toLatLng)
+          .then(directions => {
+            insert(fromLatLng, toLatLng, JSON.stringify(directions).toString());
+            console.log("Directions fetched from Google Maps API");
+            return directions;
+          })
+          .catch(err => {
+            console.error(err);
+          });
       }
     })
     .catch(err => console.error(err));
 }
-/*
-getDirections(
-  { lat: 42.88644679999999, lng: -78.8783689 },
-  { lat: 40.7127753, lng: -74.0059728 }
-)
-  .then(result => {
-    console.log(result.json.routes[0].legs[0].steps[0]);
-  })
-  .catch(err => console.error(err));
-*/
-/*
-db = getConnection();
-var result = new Promise((resolve, reject) => {
-  db.get(
-    "Select * from directions_weather order by Timestamp DESC",
-    (error, row) => {
-      if (error) {
-        console.log(error);
-        reject(error);
-      } else {
-        resolve(row);
-      }
-    }
-  );
-});
-result.then(result => console.log(result.Timestamp));
-db.close();*/
-/*select(
-  { lat: 42.88644679999999, lng: -78.8783689 },
-  { lat: 40.7127753, lng: -74.0059728 }
-)
-  .then(result => {
-    console.log(result.Timestamp);
-  })
-  .catch(err => console.error(err));
-*/
 exports.getDirections = getDirections;

@@ -1,18 +1,12 @@
 /*global google*/
+
 import React, { Component } from "react";
 import "./App.css";
 import InputBar from "./components/inputbar";
 import MyMap from "./components/map";
-/*import {
-  withGoogleMap,
-  GoogleMap,
-  Marker,
-  DirectionsService,
-  DirectionsRenderer
-} from "react-google-maps";
-*/
 require("dotenv").config();
 
+/*Create ref of Map component, so that map can be accessed from App.js file*/
 const MapWithRef = React.forwardRef(({ ...props }, ref) => {
   return <MyMap {...props} forwardedRef={ref} />;
 });
@@ -30,6 +24,9 @@ class App extends Component {
     this.map = React.createRef();
   }
 
+  /*Following four functions converts Direction object fetched using Google Map Web Services API 
+  on backend to compatible with Google Map javascript API. 
+  So that directions fetched frombackend can be rendered on frontend using javascript API*/
   asLatLng = latLngObject => {
     return new google.maps.LatLng(latLngObject.lat, latLngObject.lng);
   };
@@ -48,8 +45,6 @@ class App extends Component {
   typecastRoutes = routes => {
     routes.forEach(route => {
       route.bounds = this.asBounds(route.bounds);
-      // I don't think `overview_path` is used but it exists on the
-      // response of DirectionsService.route()
       route.overview_path = this.asPath(route.overview_polyline);
 
       route.legs.forEach(leg => {
@@ -66,12 +61,14 @@ class App extends Component {
     return routes;
   };
 
+  /*When Input in "From" or "To" input boxes, this event handler is called, which changes center of map*/
   onInputChange = latLng => {
-    console.log("PanTo ", latLng);
-
     this.map.current.panTo(latLng);
   };
 
+  /*Helper function to create markers along the route to show weather information.
+  It puts markers on route at no less than every 20 km distance
+  This function is called from onSubmit event.*/
   setMarkers = directions => {
     this.setState({ markers: [] });
     let distance = 20000;
@@ -81,7 +78,7 @@ class App extends Component {
           lat: step.start_location.lat(),
           lng: step.start_location.lng()
         },
-        //address: step.start_address,
+
         weather: {
           temp: step.weather.main.temp,
           desc: step.weather.weather[0].description
@@ -97,31 +94,11 @@ class App extends Component {
     });
   };
 
+  /*When User submits request by clicking Go Button, this even handler is called.
+  It requests to backend server for directions with weather info and 
+  update state values according to response received from server*/
   onSubmit = (fromLatLng, toLatLng) => {
-    /*this.setState(prevState => ({
-      markers: [fromLatLng, toLatLng]
-    }));
-    this.state.markers.map(marker => console.log(marker.lat, marker.lng));*/
-    /*
-    const DirectionsService = new google.maps.DirectionsService();
-    DirectionsService.route(
-      {
-        origin: fromLatLng,
-        destination: toLatLng,
-        travelMode: google.maps.TravelMode.DRIVING
-      },
-      (result, status) => {
-        if (status === google.maps.DirectionsStatus.OK) {
-          
-          this.setState({
-            directions: result
-          });
-        }
-      }
-    );
-*/
-
-    var url = new URL("/directions");
+    var url = new URL("http://localhost:4000/directions");
     var params = {
       fromLat: fromLatLng.lat,
       fromLng: fromLatLng.lng,
@@ -131,21 +108,18 @@ class App extends Component {
     url.search = new URLSearchParams(params);
 
     fetch(url, {
-      method: "GET", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
+      method: "GET",
+      mode: "cors",
+      cache: "default",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json; charset=utf-8"
-        // "Content-Type": "application/x-www-form-urlencoded",
       },
-      redirect: "follow", // manual, *follow, error
-      referrer: "no-referrer" // no-referrer, *client
-      //body: JSON.stringify(data) // body data type must match "Content-Type" header
+      redirect: "follow",
+      referrer: "no-referrer"
     })
       .then(response => response.json())
       .then(response => {
-        //console.log(directions.json.routes[0]);
         this.setState({
           directions: {
             routes: this.typecastRoutes(response.json.routes),
@@ -158,10 +132,11 @@ class App extends Component {
         });
         this.setState({ isDirection: true });
         this.setMarkers(response.json);
-        console.log(response.json.geocoded_waypoints);
-      });
+      })
+      .catch(err => console.error(err));
   };
 
+  /*Render all components in browser*/
   render() {
     return (
       <React.Fragment>

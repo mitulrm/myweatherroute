@@ -1,11 +1,9 @@
+/*This is main component which mounts all user input components - From and To input Box and Button.*/
+
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.css";
-import {
-  /*PlacesAutocomplete,*/ geocodeByAddress,
-  getLatLng
-} from "react-places-autocomplete";
+import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
 import AutoComplete from "./autocomplete";
-//import MyMap from "./map";
 
 class InputBar extends Component {
   state = {
@@ -15,18 +13,19 @@ class InputBar extends Component {
     toLatLng: {}
   };
 
+  /*This event handler is called from  AutoComplete Component whenever value of input boxes(from / To) changes.
+  It simply changes state values according to input change.*/
   onChange = (type, value) => {
     if (type === "from") {
       this.setState({ from: value });
-      console.log("From change:" + this.state.from);
     } else {
       this.setState({ to: value });
-      console.log("To changed:" + this.state.to);
     }
   };
 
+  /*This event handler is called from AutoComplete component when user selects location from Autocomplete suggestions 
+  It sets Latitude and Longitude values according to Selected location.*/
   onSelect = (type, location) => {
-    console.log("Selected location:" + location);
     geocodeByAddress(location)
       .then(results => getLatLng(results[0]))
       .then(latLng => {
@@ -43,10 +42,12 @@ class InputBar extends Component {
       .catch(error => console.error("Error", error));
   };
 
+  /*This event handler is be called when user submits request by clicking Go Button. It calls onSubmit event handler in App.js Component. */
   onSubmit = () => {
     this.props.onSubmit(this.state.fromLatLng, this.state.toLatLng);
   };
 
+  /*Render Component */
   render() {
     return (
       <nav className="navbar navbar-light bg-light">

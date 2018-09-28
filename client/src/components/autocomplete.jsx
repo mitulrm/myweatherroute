@@ -1,20 +1,22 @@
+/*This is AutoComplete Component which provides autocomplete suggestions to user. 
+It also mounts From and To input boxes.*/
+
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import PlacesAutocomplete from "react-places-autocomplete";
-/*, {
-  geocodeByAddress,
-  getLatLng
-} */
 
 class AutoComplete extends Component {
+  /*This event handler is called when value of input boxe(from / To) changes.
+  It calls onChange event handler defined in Inputbar Component*/
   onChange = location => {
     this.props.onChange(this.props.type, location);
   };
-
+  /*This event handler is called from AutoComplete component when user selects location from Autocomplete suggestions.
+  It calls onSelect event handler defined in Inputbar Component*/
   onSelect = location => {
     this.props.onSelect(this.props.type, location);
   };
-
+  /*Render Component */
   render() {
     return (
       <PlacesAutocomplete

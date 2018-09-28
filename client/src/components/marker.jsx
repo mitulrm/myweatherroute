@@ -1,20 +1,20 @@
-import {
-  /*  withScriptjs,*/
+/*This is Marker Compnent. Each marker component has its own InfoWindow.*/
 
-  Marker,
-  InfoWindow
-} from "react-google-maps";
+import { Marker, InfoWindow } from "react-google-maps";
 
 import React, { Component } from "react";
+
 class MarkerWithInfo extends Component {
   state = {
     isOpen: false
   };
 
+  /*To toggle open and close InfoWindow*/
   onToggleOpen = () => {
     this.setState({ isOpen: !this.state.isOpen });
   };
 
+  /*Render Marker with InfoWindow*/
   render() {
     return (
       <Marker
