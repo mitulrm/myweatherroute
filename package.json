@@ -2,10 +2,11 @@
   "name": "myweatherroute",
   "version": "0.0.0",
   "private": true,
-  "main":"server.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "client": "npm start --prefix client"
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
     "@google/maps": "^0.5.5",
@@ -21,10 +22,3 @@
     "sqlite3": "^4.0.2"
   }
 }
-
-
-"start": "export PORT=3005; 
-npm-run-all --parallel server:start client:start",
-    "client:start": "export PORT=3005; react-scripts start",
-    "server:start": "node server.js",
-    "build": "react-scripts build",
