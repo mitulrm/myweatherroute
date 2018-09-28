@@ -121,7 +121,7 @@ class App extends Component {
     );
 */
 
-    var url = new URL("http://localhost:4000/directions");
+    var url = new URL("/directions");
     var params = {
       fromLat: fromLatLng.lat,
       fromLng: fromLatLng.lng,
