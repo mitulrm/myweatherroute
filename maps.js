@@ -1,7 +1,9 @@
 const fetch = require("node-fetch");
 //const request = require("request");
+require("dotenv").config();
+
 const googleMapsClient = require("@google/maps").createClient({
-  key: "AIzaSyBuEgjDNa2KYTcaHpJqi-Sv82kvf4r3POM",
+  key: process.env.MAP_API_KEY,
   Promise: Promise
 });
 //console.log("Hello");
@@ -9,7 +11,7 @@ const googleMapsClient = require("@google/maps").createClient({
 function getWeather(Lat, Lng) {
   return (
     fetch(
-      `http://api.openweathermap.org/data/2.5/weather?lat=${Lat}&lon=${Lng}&units=metric&mode=json&APPID=3d835e76a19438d810f844383981b351`
+      `http://api.openweathermap.org/data/2.5/weather?lat=${Lat}&lon=${Lng}&units=metric&mode=json&APPID=${process.env.WEATHER_API_KEY}`
     )
       .then(response => {
         return response.json();

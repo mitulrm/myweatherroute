@@ -11,6 +11,8 @@ import MyMap from "./components/map";
   DirectionsRenderer
 } from "react-google-maps";
 */
+require("dotenv").config();
+
 const MapWithRef = React.forwardRef(({ ...props }, ref) => {
   return <MyMap {...props} forwardedRef={ref} />;
 });
@@ -72,7 +74,7 @@ class App extends Component {
 
   setMarkers = directions => {
     this.setState({ markers: [] });
-    let distance = 0;
+    let distance = 20000;
     directions.routes[0].legs[0].steps.forEach(step => {
       const marker = {
         position: {
@@ -85,13 +87,13 @@ class App extends Component {
           desc: step.weather.weather[0].description
         }
       };
-      distance = distance + step.distance.value;
-      if (distance > 20000) {
+      if (distance >= 20000) {
         this.setState(prevState => ({
           markers: [...prevState.markers, marker]
         }));
         distance = 0;
       }
+      distance = distance + step.distance.value;
     });
   };
 

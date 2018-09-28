@@ -1,12 +1,13 @@
 const express = require("express");
 const maps = require("./maps");
+const db = require("./db");
 const app = express();
 const port = 4000;
-
+require("dotenv").config();
 const fetch = require("node-fetch");
 //const request = require("request");
 const googleMapsClient = require("@google/maps").createClient({
-  key: "AIzaSyBuEgjDNa2KYTcaHpJqi-Sv82kvf4r3POM",
+  key: process.env.MAP_API_KEY,
   Promise: Promise
 });
 
@@ -54,13 +55,16 @@ app.get("/", (request, response) => {
 app.get("/directions/", (request, response) => {
   const fromLatLng = { lat: request.query.fromLat, lng: request.query.fromLng };
   const toLatLng = { lat: request.query.toLat, lng: request.query.toLng };
-  maps
+  /*maps
     .directions(fromLatLng, toLatLng)
     .then(directions => response.send(directions))
     .catch(err => {
       console.log(err);
     });
-
+*/
+  db.getDirections(fromLatLng, toLatLng)
+    .then(directions => response.send(directions))
+    .catch(err => console.error(err));
   //response.send(`Hello from Express with params! ${request.query.fromLat}`);
 });
 
