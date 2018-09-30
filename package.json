@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "main": "server.js",
+  "engines": {
+    "node": "=8.11.4",
+    "npm": ">=5.6.0"
+  },
   "scripts": {
     "start": "node server.js",
     "client": "npm start --prefix client"
