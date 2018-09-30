@@ -5,13 +5,13 @@ fetches requested directions and weather and sends response to frontend with all
 const express = require("express");
 const db = require("./db");
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 require("dotenv").config();
 const maps = require("./maps");
 
 /*Middleware function which sets necessary header information in response. */
 app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Origin", "*");
 
   res.setHeader(
     "Access-Control-Allow-Methods",
